@@ -1,10 +1,19 @@
 import { expect, test } from 'vitest';
 import { AnswerQuestionUseCase } from './answer-question';
+import { randomUUID } from 'crypto';
+import { AnswerRepository } from '../repositories/answers-repository';
+import { Answer } from '../entities/answer';
 
-test('Create an answer', () => {
-  const answerQuestion = new AnswerQuestionUseCase();
+const fakeAnswerRepository: AnswerRepository = {
+  create: async (answer: Answer): Promise<void> => {
+    return;
+  },
+};
 
-  const answer = answerQuestion.execute({
+test('Create an answer', async () => {
+  const answerQuestion = new AnswerQuestionUseCase(fakeAnswerRepository);
+
+  const answer = await answerQuestion.execute({
     questionId: '1',
     content: 'Answer content',
     instructorId: '1',
@@ -12,5 +21,7 @@ test('Create an answer', () => {
 
   expect(answer).toBeDefined();
   expect(answer.content).toBe('Answer content');
-  expect(answer.id).toBe('1');
+  expect(answer.questionId).toBe('1');
+  expect(answer.authorId).toBe('1');
+  expect(typeof answer.id).toBe(typeof randomUUID());
 });
